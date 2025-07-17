@@ -22,29 +22,7 @@ public class Courier {
     private Long id;
 
     @Column(nullable = false)
-    private String firstName;
-
-    @Column(nullable = false)
-    private String lastName;
-
-    @Column(nullable = false, unique = true)
-    private String phoneNumber;
-
-    @Column(unique = true)
-    private String email;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private CourierStatus status;
-
-    @Column(nullable = false)
-    private String vehicleType;
-
-    @Column(nullable = false, unique = true)
-    private String vehicleNumber;
-
-    @Column(nullable = false)
-    private String currentLocation;
+    private String name;
 
     @OneToMany(mappedBy = "courier", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
@@ -57,13 +35,10 @@ public class Courier {
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    @Column(name = "delivered_at")
+    private LocalDateTime deliveredAt;
 
-    @Version
-    private Integer version;
-
-    // Методы для управления доставками
+    /*
     public void addDelivery(Package pkg) {
         deliveries.add(pkg);
         pkg.setCourier(this);
@@ -72,24 +47,10 @@ public class Courier {
     public void removeDelivery(Package pkg) {
         deliveries.remove(pkg);
         pkg.setCourier(null);
+    }*/
+
+    public String getName() {
+        return name;
     }
 
-    // Метод для получения полного имени
-    public String getFullName() {
-        return firstName + " " + lastName;
-    }
-
-    // Метод проверки доступности курьера
-    public boolean isAvailable() {
-        return status == CourierStatus.AVAILABLE;
-    }
-
-    // Enum для статусов курьера
-    public enum CourierStatus {
-        AVAILABLE,
-        ON_DELIVERY,
-        ON_BREAK,
-        OFF_DUTY,
-        SUSPENDED
-    }
 }
