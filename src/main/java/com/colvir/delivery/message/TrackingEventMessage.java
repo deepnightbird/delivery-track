@@ -1,6 +1,5 @@
 package com.colvir.delivery.message;
 
-import com.colvir.delivery.model.TrackingStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +14,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class TrackingEventMessage {
     private String trackingNumber;
-    private TrackingStatus status;
     private String location;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

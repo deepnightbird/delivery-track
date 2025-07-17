@@ -2,7 +2,6 @@ package com.colvir.delivery.repository;
 
 import com.colvir.delivery.model.Package;
 import com.colvir.delivery.model.TrackingEvent;
-import com.colvir.delivery.model.TrackingStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

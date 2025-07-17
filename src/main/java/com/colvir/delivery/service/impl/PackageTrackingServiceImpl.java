@@ -8,7 +8,6 @@ import com.colvir.delivery.mapper.TrackingEventMapper;
 import com.colvir.delivery.message.TrackingEventMessage;
 import com.colvir.delivery.model.Package;
 import com.colvir.delivery.model.TrackingEvent;
-import com.colvir.delivery.model.TrackingStatus;
 import com.colvir.delivery.repository.PackageRepository;
 import com.colvir.delivery.repository.TrackingEventRepository;
 import com.colvir.delivery.service.PackageTrackingService;
