@@ -14,15 +14,8 @@ import java.time.format.DateTimeFormatter;
 @Mapper(componentModel = "spring")
 public interface TrackingEventMapper {
 
-    TrackingEventMapper INSTANCE = Mappers.getMapper(TrackingEventMapper.class);
-
-    @Mapping(source = "pkg.trackingNumber", target = "trackingNumber")
-    @Mapping(source = "eventName", target = "eventName")
     TrackingEventDto toDto(TrackingEvent entity);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "pkg", ignore = true)
-    @Mapping(source = "eventName", target = "eventName")
     TrackingEvent toEntity(TrackingEventDto dto);
 
     @Named("formatDateTime")
@@ -41,6 +34,7 @@ public interface TrackingEventMapper {
         return LocalDateTime.parse(dateTimeStr, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
+    // удалить !!!
     /*default void updateEntityFromDto(TrackingEventDto dto, @MappingTarget TrackingEvent entity) {
         if (dto == null) {
             return;

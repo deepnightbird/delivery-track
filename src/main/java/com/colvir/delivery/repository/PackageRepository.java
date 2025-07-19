@@ -14,31 +14,40 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface PackageRepository extends JpaRepository<Package, Long>, JpaSpecificationExecutor<Package> {
 
     Optional<Package> findByTrackingNumber(String trackingNumber);
 
     List<Package> findByStatus(PackageStatus status);
 
-    @Query("SELECT p FROM packages p WHERE p.sender.id = :senderId")
+    @Query("""
+        SELECT p FROM packages p WHERE p.sender.id = :senderId
+    """)
     List<Package> findBySenderId(@Param("senderId") Long senderId);
 
-    @Query("SELECT p FROM packages p WHERE p.recipient.id = :recipientId")
+    @Query("""
+        SELECT p FROM packages p WHERE p.recipient.id = :recipientId
+    """)
     List<Package> findByRecipientId(@Param("recipientId") Long recipientId);
 
     List<Package> findByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate);
 
-    @Query("SELECT p FROM packages p WHERE p.status = :status AND p.weight > :minWeight")
+    @Query("""
+        SELECT p FROM packages p WHERE p.status = :status AND p.weight > :minWeight
+    """)
     List<Package> findByStatusAndWeightGreaterThan(
             @Param("status") PackageStatus status,
             @Param("minWeight") double minWeight);
 
     @Modifying
-    @Query("UPDATE packages p SET p.status = :status WHERE p.id = :id")
+    @Query("""
+        UPDATE packages p SET p.status = :status WHERE p.id = :id
+    """)
     void updateStatus(@Param("id") Long id, @Param("status") PackageStatus status);
 
-    @Query("SELECT p FROM packages p WHERE p.courier.id = :courierId AND p.status IN :statuses")
+    @Query("""
+        SELECT p FROM packages p WHERE p.courier.id = :courierId AND p.status IN :statuses
+    """)
     List<Package> findByCourierIdAndStatusIn(
             @Param("courierId") Long courierId,
             @Param("statuses") List<PackageStatus> statuses);
@@ -47,8 +56,10 @@ public interface PackageRepository extends JpaRepository<Package, Long>, JpaSpec
     boolean existsByTrackingNumber(String trackingNumber);
 
     // Найти просроченные посылки (статус не DELIVERED после estimatedDeliveryDate)
-    @Query("SELECT p FROM packages p WHERE p.status != com.delivery.model.PackageStatus.DELIVERED " +
-            "AND p.estimatedDeliveryDate < :currentDate")
+    @Query("""
+        SELECT p FROM packages p WHERE p.status != com.delivery.model.PackageStatus.DELIVERED
+        AND p.estimatedDeliveryDate < :currentDate
+    """)
     List<Package> findOverduePackages(@Param("currentDate") LocalDateTime currentDate);
 
     void save(PackageDto packageDto);

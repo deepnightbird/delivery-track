@@ -1,6 +1,12 @@
 package com.colvir.delivery.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Column;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,8 +24,10 @@ public class PackageStatus {
     @SequenceGenerator(name = "package_status_id_seq", sequenceName = "package_status_id_seq", allocationSize = 1)
     private Long id;
 
-    @Column(nullable = false)
     private String name;
+
+    @Column
+    private boolean isInitial;
 
     @Column
     private boolean isTerminal;

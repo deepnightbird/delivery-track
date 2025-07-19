@@ -1,6 +1,15 @@
 package com.colvir.delivery.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.SequenceGenerator;
+
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,9 +47,10 @@ public class TrackingEvent {
 
     private LocalDateTime lastUpdatedAt;
 
-    public boolean shouldSendNotification(){
+    // удалить !!!
+    /* public boolean shouldSendNotification(){
         return pkg.getStatus().isTerminal(); // || pkg.getStatus().isInitial();
-    }
+    }*/
 
 
 }

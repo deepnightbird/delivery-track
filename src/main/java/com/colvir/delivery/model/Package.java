@@ -3,7 +3,16 @@ package com.colvir.delivery.model;
 
 import com.colvir.delivery.dto.CustomerDto;
 import com.colvir.delivery.dto.PackageStatusDto;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.CascadeType;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,9 +49,10 @@ public class Package {
     @ManyToOne
     @JoinColumn(name = "recipient_id")
     private Customer recipient;
-    
-    @OneToMany(mappedBy = "pkg", cascade = CascadeType.ALL)
-    private List<TrackingEvent> trackingEvents = new ArrayList<>();
+
+    // удалить !!!!
+    /*@OneToMany(mappedBy = "pkg", cascade = CascadeType.ALL)
+    private List<TrackingEvent> trackingEvents = new ArrayList<>();*/
     
     @CreationTimestamp
     private LocalDateTime createdAt;

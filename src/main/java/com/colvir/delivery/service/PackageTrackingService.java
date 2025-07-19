@@ -12,8 +12,10 @@ import java.util.Optional;
 
 @Service
 public interface PackageTrackingService {
-    List<TrackingEventDto> getTrackingHistory(String trackingNumber) throws PackageNotFoundException;
-    void updateStatus(String trackingNumber, PackageStatusDto dto) throws PackageNotFoundException;
+    List<TrackingEventDto> getTrackingHistory(String trackingNumber)
+            throws PackageNotFoundException;
+    void updateStatus(String trackingNumber, PackageStatusDto dto)
+            throws PackageNotFoundException;
     void processTrackingEventFromQueue(TrackingEventDto eventDto);
 
     PackageDto createPackage(PackageDto dto);

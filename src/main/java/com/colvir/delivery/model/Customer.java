@@ -1,7 +1,19 @@
 package com.colvir.delivery.model;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Column;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,16 +32,14 @@ public class Customer {
     @SequenceGenerator(name = "customers_id_seq", sequenceName = "customers_id_seq", allocationSize = 1)
     private Long id;
 
-    @Column(nullable = false)
     private String name;
 
-    @Column(name = "phone_number")
     private String phoneNumber;
 
-    @Column(name = "address")
-    private String Address;
+    private String address;
 
-    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
+    // потом удалить !!!
+    /*@OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Package> sentPackages = new ArrayList<>();
 
     @OneToMany(mappedBy = "recipient", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -48,5 +58,5 @@ public class Customer {
     public boolean hasRequiredInfo() {
         return name != null && !name.isBlank()
                 && phoneNumber != null && !phoneNumber.isBlank();
-    }
+    }*/
 }

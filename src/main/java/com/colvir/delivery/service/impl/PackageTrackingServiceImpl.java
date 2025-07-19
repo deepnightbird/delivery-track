@@ -9,6 +9,7 @@ import com.colvir.delivery.mapper.TrackingEventMapper;
 import com.colvir.delivery.mapper.PackageMapper;
 import com.colvir.delivery.message.TrackingEventMessage;
 import com.colvir.delivery.model.Package;
+import com.colvir.delivery.model.PackageStatus;
 import com.colvir.delivery.model.TrackingEvent;
 import com.colvir.delivery.repository.PackageRepository;
 import com.colvir.delivery.repository.TrackingEventRepository;
@@ -39,7 +40,8 @@ public class PackageTrackingServiceImpl implements PackageTrackingService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<TrackingEventDto> getTrackingHistory(String trackingNumber) throws PackageNotFoundException {
+    public List<TrackingEventDto> getTrackingHistory(String trackingNumber)
+            throws PackageNotFoundException {
         Package pkg = packageRepository.findByTrackingNumber(trackingNumber)
                 .orElseThrow(() -> new PackageNotFoundException(trackingNumber));
 
@@ -50,14 +52,15 @@ public class PackageTrackingServiceImpl implements PackageTrackingService {
 
     @Override
     @Transactional
-    public void updateStatus(String trackingNumber, PackageStatusDto dto) throws PackageNotFoundException {
+    public void updateStatus(String trackingNumber, PackageStatusDto dto)
+            throws PackageNotFoundException {
         Package pkg = packageRepository.findByTrackingNumber(trackingNumber)
                 .orElseThrow(() -> new PackageNotFoundException(trackingNumber));
 
         TrackingEvent event = createTrackingEvent(pkg, dto);
         trackingEventRepository.save(event);
 
-        if (event.shouldSendNotification()) {
+        if (shouldSendNotification(pkg.getStatus())) {
             sendTrackingEventToKafka(trackingNumber, event);
         }
 
@@ -99,7 +102,8 @@ public class PackageTrackingServiceImpl implements PackageTrackingService {
     private TrackingEvent createTrackingEvent(Package pkg, PackageStatusDto dto) {
         TrackingEvent event = new TrackingEvent();
         event.setPkg(pkg);
-       /* event.setStatus(dto.getStatus());
+        // удалить !!!!
+        /* event.setStatus(dto.getStatus());
         event.setLocation(dto.getLocation());
         event.setDescription(dto.getDescription());*/
         return event;
@@ -121,10 +125,6 @@ public class PackageTrackingServiceImpl implements PackageTrackingService {
                 log.info("Event sent {} successfully with offset {}", event, result.getRecordMetadata().offset());
             }
         });
-        /*.
-                result -> log.info("Successfully sent tracking event to Kafka for package: {}", trackingNumber),
-                ex -> log.error("Failed to send tracking event to Kafka for package: {}", trackingNumber, ex)
-        );*/
     }
 
     private void updatePackageStatusIfNeeded(Package pkg, PackageStatusDto status) {
@@ -135,7 +135,7 @@ public class PackageTrackingServiceImpl implements PackageTrackingService {
         }
     }
 
-    /*private boolean shouldSendNotification(TrackingStatus status) {
-        return status != TrackingStatus.CREATED;
-    }*/
+    private boolean shouldSendNotification(PackageStatus status) {
+        return status.isInitial() || status.isTerminal();
+    }
 }

@@ -1,7 +1,24 @@
 package com.colvir.delivery.model;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Column;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -24,7 +41,6 @@ public class Courier {
     @SequenceGenerator(name = "couriers_id_seq", sequenceName = "couriers_id_seq", allocationSize = 1)
     private Long id;
 
-    @Column(nullable = false)
     private String name;
 
     @OneToMany(mappedBy = "courier", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -34,11 +50,9 @@ public class Courier {
     private List<Package> deliveries = new ArrayList<>();
 
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "delivered_at")
     private LocalDateTime deliveredAt;
 
 }
