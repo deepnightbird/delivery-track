@@ -1,0 +1,170 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet author="andrew" id="Create-table-packages">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="packages"/>
+            </not>
+        </preConditions>
+
+        <createSequence sequenceName="packages_id_seq" startValue="1" incrementBy="1" cycle="true"/>
+
+        <createTable tableName="packages">
+            <column name="id" type="bigint" defaultValueSequenceNext="packages_id_seq">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="tracking_number" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(2000)">
+            </column>
+            <column name="weight" type="number"/>
+            <column name="id_package_status" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_package_status"
+                             references="package_status(id)"/>
+            </column>
+            <column name="id_customer_sender" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_package_customer"
+                             references="customers(id)"/>
+            </column>
+            <column name="id_customer_recipient" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_package_customer"
+                             references="customers(id)"/>
+            </column>
+            <column name="created_ad" type="datetime" defaultValue="sysdate"/>
+            <column name="estimated_delivery_date" type="datetime"/>
+            <column name="delivered_at" type="datetime"/>
+        </createTable>
+
+        <sql><![CDATA[
+            alter sequence packages_id_seq owned by packages_id_seq.id;
+            ]]></sql>
+
+        <addUniqueConstraint tableName="packages" columnNames="tracking_number"/>
+
+    </changeSet>
+
+    <changeSet author="andrew" id="Create-table-package_status">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="package_status"/>
+            </not>
+        </preConditions>
+
+        <createSequence sequenceName="package_status_id_seq" startValue="1" incrementBy="1" cycle="true"/>
+
+        <createTable tableName="package_status">
+            <column name="id" type="bigint" defaultValueSequenceNext="package_status_id_seq">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_initial" type="boolean" defaultValue="false"/>
+            <column name="is_terminal" type="boolean" defaultValue="false"/>
+        </createTable>
+
+        <sql><![CDATA[
+            alter sequence package_status_id_seq owned by package_status.id;
+            ]]></sql>
+
+        <addUniqueConstraint tableName="package_status" columnNames="name"/>
+
+    </changeSet>
+
+    <changeSet author="andrew" id="Create-table-customers">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="customers"/>
+            </not>
+        </preConditions>
+
+        <createSequence sequenceName="customers_id_seq" startValue="1" incrementBy="1" cycle="true"/>
+
+        <createTable tableName="customers">
+            <column name="id" type="bigint" defaultValueSequenceNext="customers_id_seq">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="address" type="varchar(2000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="phone" type="varchar(40)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <sql><![CDATA[
+            alter sequence customers_id_seq owned by customers.id;
+            ]]></sql>
+
+        <addUniqueConstraint tableName="customers" columnNames="name"/>
+
+    </changeSet>
+
+    <changeSet author="andrew" id="Create-table-tracking_events">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="tracking_events"/>
+            </not>
+        </preConditions>
+
+        <createSequence sequenceName="tracking_events_id_seq" startValue="1" incrementBy="1" cycle="true"/>
+
+        <createTable tableName="tracking_events">
+            <column name="id" type="bigint" defaultValueSequenceNext="tracking_events_id_seq">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="event_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id_package" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_tracking_events_packages"
+                             references="packages(id)"/>
+            </column>
+            <column name="id_courier" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_tracking_events_couriers"
+                             references="packages(id)"/>
+            </column>
+            <column name="location" type="varchar(2000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_ad" type="datetime" defaultValue="sysdate"/>
+            <column name="last_updated_at" type="datetime"/>
+        </createTable>
+
+        <sql><![CDATA[
+            alter sequence tracking_events_id_seq owned by tracking_events.id;
+            ]]></sql>
+    </changeSet>
+
+    <changeSet author="andrew" id="Create-table-couriers">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="couriers"/>
+            </not>
+        </preConditions>
+
+        <createSequence sequenceName="couriers_id_seq" startValue="1" incrementBy="1" cycle="true"/>
+
+        <createTable tableName="couriers">
+            <column name="id" type="bigint" defaultValueSequenceNext="couriers_id_seq">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <sql><![CDATA[
+            alter sequence couriers_id_seq owned by couriers.id;
+            ]]></sql>
+    </changeSet>
+
+</databaseChangeLog>

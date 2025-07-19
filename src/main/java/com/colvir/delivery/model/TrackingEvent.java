@@ -2,42 +2,45 @@ package com.colvir.delivery.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.Id;
+
 
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "tracking_events")
 @Data
 @NoArgsConstructor
 public class TrackingEvent {
-    @jakarta.persistence.Id
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tracking_events_id_seq")
+    @SequenceGenerator(name = "tracking_events_id_seq", sequenceName = "tracking_events_id_seq", allocationSize = 1)
     private Long id;
     
     @ManyToOne
-    @JoinColumn(name = "package_id")
+    @JoinColumn(name = "id_package")
     private Package pkg;
+
+    @ManyToOne
+    @JoinColumn(name = "id_courier")
+    private Courier courier;
     
     private String location;
-    private String description;
+    private String eventName;
     
     @CreationTimestamp
-    private LocalDateTime eventTime;
+    private LocalDateTime createdAt;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
+    private LocalDateTime lastUpdatedAt;
 
     public boolean shouldSendNotification(){
         return pkg.getStatus().isTerminal(); // || pkg.getStatus().isInitial();
     }
+
 
 }

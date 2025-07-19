@@ -6,6 +6,7 @@ import com.colvir.delivery.dto.TrackingEventDto;
 import com.colvir.delivery.exception.PackageNotFoundException;
 import com.colvir.delivery.mapper.PackageStatusMapper;
 import com.colvir.delivery.mapper.TrackingEventMapper;
+import com.colvir.delivery.mapper.PackageMapper;
 import com.colvir.delivery.message.TrackingEventMessage;
 import com.colvir.delivery.model.Package;
 import com.colvir.delivery.model.TrackingEvent;
@@ -33,6 +34,7 @@ public class PackageTrackingServiceImpl implements PackageTrackingService {
     private final TrackingEventRepository trackingEventRepository;
     private final TrackingEventMapper trackingEventMapper;
     private final PackageStatusMapper packageStatusMapper;
+    private final PackageMapper packageMapper;
     private final KafkaTemplate<String, TrackingEventMessage> kafkaTemplate;
 
     @Override
@@ -89,8 +91,9 @@ public class PackageTrackingServiceImpl implements PackageTrackingService {
     }
 
     @Override
-    public PackageDto findByTrackingNumber(String trackingNumber) {
-        return null;
+    @Transactional(readOnly = true)
+    public Optional<PackageDto> findByTrackingNumber(String trackingNumber) {
+        return packageRepository.findByTrackingNumber(trackingNumber).map(packageMapper::toDto);
     }
 
     private TrackingEvent createTrackingEvent(Package pkg, PackageStatusDto dto) {

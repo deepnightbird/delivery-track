@@ -1,9 +1,11 @@
 package com.colvir.delivery.exception;
 
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+@Getter
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 public class PackageNotFoundException extends RuntimeException {
 
@@ -17,14 +19,5 @@ public class PackageNotFoundException extends RuntimeException {
     public PackageNotFoundException(String trackingNumber, Throwable cause) {
         super(String.format("Package with tracking number '%s' not found", trackingNumber), cause);
         this.trackingNumber = trackingNumber;
-    }
-
-    public String getTrackingNumber() {
-        return trackingNumber;
-    }
-
-    @Override
-    public synchronized Throwable fillInStackTrace() {
-        return this; // Оптимизация - не заполняем stack trace для известных ошибок
     }
 }

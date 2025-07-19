@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "couriers")
 @Data
@@ -18,7 +20,8 @@ import java.util.List;
 public class Courier {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "couriers_id_seq")
+    @SequenceGenerator(name = "couriers_id_seq", sequenceName = "couriers_id_seq", allocationSize = 1)
     private Long id;
 
     @Column(nullable = false)
@@ -37,20 +40,5 @@ public class Courier {
     @UpdateTimestamp
     @Column(name = "delivered_at")
     private LocalDateTime deliveredAt;
-
-    /*
-    public void addDelivery(Package pkg) {
-        deliveries.add(pkg);
-        pkg.setCourier(this);
-    }
-
-    public void removeDelivery(Package pkg) {
-        deliveries.remove(pkg);
-        pkg.setCourier(null);
-    }*/
-
-    public String getName() {
-        return name;
-    }
 
 }

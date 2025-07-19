@@ -4,19 +4,7 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
     
+<include file="schema.xml" relativeToChangelogFile="true"/>
+<include file="data.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>
-
-
-<changeSet id="1" author="delivery">
-    <createTable tableName="packages">
-        <column name="id" type="bigint" autoIncrement="true">
-            <constraints primaryKey="true"/>
-        </column>
-        <column name="tracking_number" type="varchar(50)">
-            <constraints unique="true" nullable="false"/>
-        </column>
-        <!-- ������ ������� -->
-    </createTable>
-    
-    <!-- ������ ������� -->
-</changeSet>

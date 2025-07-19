@@ -19,10 +19,12 @@
 
     <properties>
         <javax.annotation-api.version>1.3.2</javax.annotation-api.version>
-        <lombok.version>1.18.26</lombok.version>
-        <mapstruct.version>1.5.5.Final</mapstruct.version>
+        <lombok.version>1.18.36</lombok.version>
+        <mapstruct.version>1.6.3</mapstruct.version>
+        <mapstruct.defaulComponentModel>spring</mapstruct.defaulComponentModel>
         <testcontainers.version>1.18.3</testcontainers.version>
         <springdoc-openapi-ui.version>2.8.6</springdoc-openapi-ui.version>
+        <maven.compiler.plugin.version>3.14.0</maven.compiler.plugin.version>
     </properties>
 
     <dependencies>
@@ -109,10 +111,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.colvir</groupId>
-            <artifactId>delivery-track</artifactId>
-            <version>1.0.0</version>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
         </dependency>
+
     </dependencies>
 
     <build>
@@ -124,7 +127,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
+                <version>${maven.compiler.plugin.version}</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>

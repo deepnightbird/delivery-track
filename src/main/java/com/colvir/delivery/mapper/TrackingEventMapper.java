@@ -17,12 +17,12 @@ public interface TrackingEventMapper {
     TrackingEventMapper INSTANCE = Mappers.getMapper(TrackingEventMapper.class);
 
     @Mapping(source = "pkg.trackingNumber", target = "trackingNumber")
-    @Mapping(source = "eventTime", target = "eventTime", qualifiedByName = "formatDateTime")
+    @Mapping(source = "eventName", target = "eventName")
     TrackingEventDto toDto(TrackingEvent entity);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "pkg", ignore = true)
-    @Mapping(source = "eventTime", target = "eventTime", qualifiedByName = "parseDateTime")
+    @Mapping(source = "eventName", target = "eventName")
     TrackingEvent toEntity(TrackingEventDto dto);
 
     @Named("formatDateTime")

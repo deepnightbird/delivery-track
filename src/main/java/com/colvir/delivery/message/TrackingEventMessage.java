@@ -25,16 +25,6 @@ public class TrackingEventMessage {
     private Double latitude;
     private Double longitude;
 
-    /**
-     * Проверяет, является ли событие значимым для уведомления клиента
-     *
-    public boolean isNotificationRequired() {
-        return status.isMilestone() || status == TrackingStatus.FAILED_DELIVERY;
-    }*/
-
-    /**
-     * Создает краткое описание события для уведомления
-     */
     public String getNotificationMessage() {
         return String.format("Посылка %s: %s в %s (%s)",
                 trackingNumber,
@@ -42,10 +32,4 @@ public class TrackingEventMessage {
                 eventTime.format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")));
     }
 
-    /**
-     * Проверяет наличие геоданных
-     */
-    public boolean hasGeoData() {
-        return latitude != null && longitude != null;
-    }
 }

@@ -1,35 +1,40 @@
 
 package com.colvir.delivery.model;
 
+import com.colvir.delivery.dto.CustomerDto;
+import com.colvir.delivery.dto.PackageStatusDto;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "packages")
 @Data
 @NoArgsConstructor
 public class Package {
-    @jakarta.persistence.Id
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "packages_id_seq")
+    @SequenceGenerator(name = "packages_id_seq", sequenceName = "packages_id_seq", allocationSize = 1)
     private Long id;
     
     private String trackingNumber;
     private String description;
     private double weight;
     @ManyToOne
-    @JoinColumn(name = "status_id")
+    @JoinColumn(name = "id_status")
     private PackageStatus status;
 
     @ManyToOne
-    @JoinColumn(name = "sender_id")
+    @JoinColumn(name = "id_sender_id")
     private Customer sender;
     
     @ManyToOne
@@ -41,5 +46,16 @@ public class Package {
     
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+    public Package(Long id, String trackingNumber, String description, float weight, PackageStatusDto statusDto, CustomerDto senderDto, CustomerDto recepientDto) {
+        this.id = id;
+        this.trackingNumber = trackingNumber;
+        this.description = description;
+        this.weight = weight;
+        // здесь надо доделать !!!!!
+        /*this.status = statusDto;
+        this.sender = senderDto;
+        this.recipient = recepientDto;*/
+    }
 
 }

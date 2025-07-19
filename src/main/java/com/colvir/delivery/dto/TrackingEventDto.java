@@ -19,12 +19,16 @@ public class TrackingEventDto{
     private String eventName;
     private LocalDateTime createdAt;
     private LocalDateTime lastUpdatedAt;
-    private Long id_courier;
+    private CourierDto courierDto;
     private PackageStatusDto packageStatus;
     private Package pkg;
 
     public String getTrackingNumber() {
         return pkg.getTrackingNumber();
+    }
+
+    public void setTrackingNumber(String trackingNumber) {
+        pkg.setTrackingNumber(trackingNumber);
     }
 
 }

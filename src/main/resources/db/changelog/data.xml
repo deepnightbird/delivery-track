@@ -1,0 +1,34 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet author="andrew" id="Populate-table-package_status">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0"><![CDATA[
+                select count(*) from package_status
+                ]]></sqlCheck>
+        </preConditions>
+        <sqlFile relativeToChangelogFile="true" path="package_status-data.sql" />
+    </changeSet>
+
+    <changeSet author="andrew" id="Populate-table-customers">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0"><![CDATA[
+                select count(*) from customers
+                ]]></sqlCheck>
+        </preConditions>
+        <sqlFile relativeToChangelogFile="true" path="customers-data.sql" />
+    </changeSet>
+
+    <changeSet author="andrew" id="Populate-table-couriers">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0"><![CDATA[
+                select count(*) from couriers
+                ]]></sqlCheck>
+        </preConditions>
+        <sqlFile relativeToChangelogFile="true" path="couriers-data.sql" />
+    </changeSet>
+
+</databaseChangeLog>
