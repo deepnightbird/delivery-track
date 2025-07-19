@@ -35,4 +35,9 @@ public class TrackingEvent {
     public Long getId() {
         return id;
     }
+
+    public boolean shouldSendNotification(){
+        return pkg.getStatus().isTerminal(); // || pkg.getStatus().isInitial();
+    }
+
 }

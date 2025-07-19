@@ -1,6 +1,7 @@
 package com.colvir.delivery.repository;
 
 import com.colvir.delivery.model.Package;
+import com.colvir.delivery.model.PackageStatus;
 import com.colvir.delivery.model.TrackingEvent;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +23,7 @@ public interface TrackingEventRepository extends JpaRepository<TrackingEvent, Lo
     Page<TrackingEvent> findByPkg(Package pkg, Pageable pageable);
 
     // Найти все события определенного статуса
-    List<TrackingEvent> findByStatus(TrackingStatus status);
+    List<TrackingEvent> findByStatus(PackageStatus status);
 
     // Найти события в указанный период времени
     @Query("SELECT te FROM TrackingEvent te WHERE te.eventTime BETWEEN :start AND :end")
@@ -36,12 +37,12 @@ public interface TrackingEventRepository extends JpaRepository<TrackingEvent, Lo
     // Найти все события с определенным статусом для посылки
     @Query("SELECT te FROM TrackingEvent te WHERE te.pkg = :pkg AND te.status = :status")
     List<TrackingEvent> findByPackageAndStatus(@Param("pkg") Package pkg,
-                                               @Param("status") TrackingStatus status);
+                                               @Param("status") PackageStatus status);
 
     // Получить количество событий определенного типа для посылки
     @Query("SELECT COUNT(te) FROM TrackingEvent te WHERE te.pkg = :pkg AND te.status = :status")
     long countByPackageAndStatus(@Param("pkg") Package pkg,
-                                 @Param("status") TrackingStatus status);
+                                 @Param("status") PackageStatus status);
 
     // Найти все события в определенном местоположении
     List<TrackingEvent> findByLocationContainingIgnoreCase(String location);

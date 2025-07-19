@@ -38,7 +38,6 @@ public class TrackingEventMessage {
     public String getNotificationMessage() {
         return String.format("Посылка %s: %s в %s (%s)",
                 trackingNumber,
-                status,
                 location,
                 eventTime.format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")));
     }

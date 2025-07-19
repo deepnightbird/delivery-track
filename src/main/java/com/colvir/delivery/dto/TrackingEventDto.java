@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import com.colvir.delivery.model.Package;
 
 @Data
 @NoArgsConstructor
@@ -19,5 +20,11 @@ public class TrackingEventDto{
     private LocalDateTime createdAt;
     private LocalDateTime lastUpdatedAt;
     private Long id_courier;
+    private PackageStatusDto packageStatus;
+    private Package pkg;
+
+    public String getTrackingNumber() {
+        return pkg.getTrackingNumber();
+    }
 
 }

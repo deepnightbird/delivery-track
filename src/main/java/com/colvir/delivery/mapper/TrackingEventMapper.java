@@ -41,7 +41,7 @@ public interface TrackingEventMapper {
         return LocalDateTime.parse(dateTimeStr, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
-    default void updateEntityFromDto(TrackingEventDto dto, @MappingTarget TrackingEvent entity) {
+    /*default void updateEntityFromDto(TrackingEventDto dto, @MappingTarget TrackingEvent entity) {
         if (dto == null) {
             return;
         }
@@ -58,5 +58,5 @@ public interface TrackingEventMapper {
         if (dto.getEventTime() != null) {
             entity.setEventTime(parseDateTime(dto.getEventTime()));
         }
-    }
+    }*/
 }

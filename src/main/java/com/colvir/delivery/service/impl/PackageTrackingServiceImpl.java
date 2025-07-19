@@ -4,6 +4,7 @@ import com.colvir.delivery.dto.PackageDto;
 import com.colvir.delivery.dto.PackageStatusDto;
 import com.colvir.delivery.dto.TrackingEventDto;
 import com.colvir.delivery.exception.PackageNotFoundException;
+import com.colvir.delivery.mapper.PackageStatusMapper;
 import com.colvir.delivery.mapper.TrackingEventMapper;
 import com.colvir.delivery.message.TrackingEventMessage;
 import com.colvir.delivery.model.Package;
@@ -31,6 +32,7 @@ public class PackageTrackingServiceImpl implements PackageTrackingService {
     private final PackageRepository packageRepository;
     private final TrackingEventRepository trackingEventRepository;
     private final TrackingEventMapper trackingEventMapper;
+    private final PackageStatusMapper packageStatusMapper;
     private final KafkaTemplate<String, TrackingEventMessage> kafkaTemplate;
 
     @Override
@@ -53,11 +55,11 @@ public class PackageTrackingServiceImpl implements PackageTrackingService {
         TrackingEvent event = createTrackingEvent(pkg, dto);
         trackingEventRepository.save(event);
 
-        if (shouldSendNotification(dto.getStatus())) {
+        if (event.shouldSendNotification()) {
             sendTrackingEventToKafka(trackingNumber, event);
         }
 
-        updatePackageStatusIfNeeded(pkg, dto.getStatus());
+        updatePackageStatusIfNeeded(pkg, dto);
     }
 
     @Override
@@ -94,16 +96,16 @@ public class PackageTrackingServiceImpl implements PackageTrackingService {
     private TrackingEvent createTrackingEvent(Package pkg, PackageStatusDto dto) {
         TrackingEvent event = new TrackingEvent();
         event.setPkg(pkg);
-        event.setStatus(dto.getStatus());
+       /* event.setStatus(dto.getStatus());
         event.setLocation(dto.getLocation());
-        event.setDescription(dto.getDescription());
+        event.setDescription(dto.getDescription());*/
         return event;
     }
 
     private void sendTrackingEventToKafka(String trackingNumber, TrackingEvent event) {
         TrackingEventMessage message = TrackingEventMessage.builder()
                 .trackingNumber(trackingNumber)
-                .status(event.getStatus())
+                //.status(event.getStatus())
                 .location(event.getLocation())
                 .eventTime(LocalDateTime.now())
                 .build();
@@ -122,15 +124,15 @@ public class PackageTrackingServiceImpl implements PackageTrackingService {
         );*/
     }
 
-    private void updatePackageStatusIfNeeded(Package pkg, TrackingStatus status) {
+    private void updatePackageStatusIfNeeded(Package pkg, PackageStatusDto status) {
         if (status.isTerminalStatus()) {
-            pkg.setStatus(status.toPackageStatus());
+            pkg.setStatus(packageStatusMapper.toEntity(status));
             packageRepository.save(pkg);
             log.info("Updated package status to {} for package: {}", status, pkg.getTrackingNumber());
         }
     }
 
-    private boolean shouldSendNotification(TrackingStatus status) {
+    /*private boolean shouldSendNotification(TrackingStatus status) {
         return status != TrackingStatus.CREATED;
-    }
+    }*/
 }

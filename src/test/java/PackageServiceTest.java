@@ -63,7 +63,7 @@ class PackageServiceTest {
         // given
         String trackingNumber = "TRACK123";
         Package pkg = new Package();
-        pkg.setTrackingNumber(trackingNumber);
+        // pkg.setTrackingNumber(trackingNumber);
         
         when(packageRepository.findByTrackingNumber(trackingNumber))
             .thenReturn(Optional.of(pkg));

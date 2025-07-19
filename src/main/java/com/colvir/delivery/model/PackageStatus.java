@@ -17,6 +17,9 @@ public class PackageStatus {
     @Column(nullable = false)
     private String name;
 
+    @Column
+    private boolean isTerminal;
+
     public String toString() {
         return this.name;
     }

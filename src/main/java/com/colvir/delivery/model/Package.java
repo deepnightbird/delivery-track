@@ -24,6 +24,8 @@ public class Package {
     private String trackingNumber;
     private String description;
     private double weight;
+    @ManyToOne
+    @JoinColumn(name = "status_id")
     private PackageStatus status;
 
     @ManyToOne
@@ -40,11 +42,4 @@ public class Package {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
 }
