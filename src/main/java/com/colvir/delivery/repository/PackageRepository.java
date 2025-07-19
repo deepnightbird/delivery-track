@@ -39,11 +39,11 @@ public interface PackageRepository extends JpaRepository<Package, Long>, JpaSpec
             @Param("status") PackageStatus status,
             @Param("minWeight") double minWeight);
 
+    @Query(value = """
+        UPDATE packages p SET p.id_package_status = (SELECT s.id FROM package_stauts s WHERE s.name = :statusName) WHERE p.id = :id
+    """, nativeQuery = true)
     @Modifying
-    @Query("""
-        UPDATE packages p SET p.status = :status WHERE p.id = :id
-    """)
-    void updateStatus(@Param("id") Long id, @Param("status") PackageStatus status);
+    void updateStatusName(@Param("id") Long id, @Param("statusName") String statusName);
 
     @Query("""
         SELECT p FROM packages p WHERE p.courier.id = :courierId AND p.status IN :statuses
@@ -52,10 +52,8 @@ public interface PackageRepository extends JpaRepository<Package, Long>, JpaSpec
             @Param("courierId") Long courierId,
             @Param("statuses") List<PackageStatus> statuses);
 
-    // Проверить существование посылки по tracking number
     boolean existsByTrackingNumber(String trackingNumber);
 
-    // Найти просроченные посылки (статус не DELIVERED после estimatedDeliveryDate)
     @Query("""
         SELECT p FROM packages p WHERE p.status != com.delivery.model.PackageStatus.DELIVERED
         AND p.estimatedDeliveryDate < :currentDate

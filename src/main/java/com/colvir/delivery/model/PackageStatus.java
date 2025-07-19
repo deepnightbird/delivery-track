@@ -24,6 +24,7 @@ public class PackageStatus {
     @SequenceGenerator(name = "package_status_id_seq", sequenceName = "package_status_id_seq", allocationSize = 1)
     private Long id;
 
+    @Column
     private String name;
 
     @Column

@@ -1,3 +1,31 @@
+spring:
+  application:
+    name: &applicationName DeliveryTracking
+  config:
+    import: optional:configserver:http://localhost:8600
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: *applicationName
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.colvir.dto, org.springframework.cloud.bus.event"
+  #      auto-offset-reset: latest # by default, earliest
+  main:
+    banner-mode: 'off'
+  datasource:
+    url: jdbc:postgresql://localhost:5432/delivery
+    username: delivery_user
+    password: delivery_password
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    change-log: 'classpath:db/changelog/changeLog.xml'
+#    default-schema: 'deliverydb'
+#    liquibase-schema: 'deliverydb'
+
 management:
   endpoints:
     web:
@@ -9,9 +37,6 @@ management:
     prometheus:
       enabled: true
   metrics:
-    export:
-      prometheus:
-        enabled: true
     distribution:
       percentiles-histogram:
         http.server.requests: true

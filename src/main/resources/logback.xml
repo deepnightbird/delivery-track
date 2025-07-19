@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="5 seconds" debug="true">
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+
+    <springProperty scope="context" name="SPRING_APP_NAME" source="spring.application.name"/>
+    <property name="APPLICATION_NAME"
+              value="${SPRING_APP_NAME:-base}"/>
+
+    <!--  <include resource="logback-common.xml" /> !-->
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <!--        <appender-ref ref="FILE"/>-->
+    </root>
+
+    <!--     switch off unnecessary output LOG4JDBC-->
+    <logger name="jdbc.sqlonly" level="OFF"/>
+    <logger name="jdbc.sqltiming" level="WARN"/>
+    <logger name="jdbc.audit" level="OFF"/>
+    <logger name="jdbc.resultset" level="ERROR"/>
+    <logger name="jdbc.resultsettable" level="ERROR"/>
+    <logger name="jdbc.connection" level="OFF"/>
+
+</configuration>

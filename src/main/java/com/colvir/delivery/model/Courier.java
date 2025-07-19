@@ -43,12 +43,6 @@ public class Courier {
 
     private String name;
 
-    @OneToMany(mappedBy = "courier", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    @Builder.Default
-    private List<Package> deliveries = new ArrayList<>();
-
     @CreationTimestamp
     private LocalDateTime createdAt;
 
