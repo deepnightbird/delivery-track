@@ -62,6 +62,10 @@
 
         <addUniqueConstraint tableName="customers" columnNames="name"/>
 
+        <createIndex indexName="idx_customers_phone_number" tableName="customers">
+            <column name="phone_number"/>
+        </createIndex>
+
     </changeSet>
 
     <changeSet author="andrew" id="Create-table-couriers">
@@ -85,6 +89,9 @@
         <sql><![CDATA[
             alter sequence couriers_id_seq owned by couriers.id;
             ]]></sql>
+
+        <addUniqueConstraint tableName="couriers" columnNames="name"/>
+
     </changeSet>
 
     <changeSet author="andrew" id="Create-table-packages">
@@ -129,6 +136,10 @@
 
         <addUniqueConstraint tableName="packages" columnNames="tracking_number"/>
 
+        <createIndex indexName="idx_packages_created_ad" tableName="packages">
+            <column name="created_ad"/>
+        </createIndex>
+
     </changeSet>
 
     <changeSet author="andrew" id="Create-table-tracking_events">
@@ -165,6 +176,11 @@
         <sql><![CDATA[
             alter sequence tracking_events_id_seq owned by tracking_events.id;
             ]]></sql>
+
+        <createIndex indexName="idx_tracking_events_created_ad" tableName="tracking_events">
+            <column name="created_ad"/>
+        </createIndex>
+
     </changeSet>
 
 

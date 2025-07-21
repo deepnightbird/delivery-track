@@ -38,19 +38,21 @@ public class PackageTrackingServiceImpl implements PackageTrackingService {
     private final PackageMapper packageMapper;
     private final KafkaTemplate<String, TrackingEventMessage> kafkaTemplate;
 
+
     @Override
     @Transactional(readOnly = true)
     public List<TrackingEventDto> getTrackingHistory(String trackingNumber)
             throws PackageNotFoundException {
-        Package pkg = packageRepository.findByTrackingNumber(trackingNumber)
+        /*Package pkg = packageRepository.findByTrackingNumber(trackingNumber)
                 .orElseThrow(() -> new PackageNotFoundException(trackingNumber));
 
         return trackingEventRepository.findByPkgOrderByEventTimeDesc(pkg).stream()
                 .map(trackingEventMapper::toDto)
-                .toList();
+                .toList();*/
+        return null;
     }
 
-    @Override
+    /*@Override
     @Transactional
     public void updateStatus(String trackingNumber, PackageStatusDto dto)
             throws PackageNotFoundException {
@@ -91,7 +93,7 @@ public class PackageTrackingServiceImpl implements PackageTrackingService {
     @Override
     public PackageDto createPackage(PackageDto dto) {
         return new PackageDto();
-    }
+    }*/
 
     @Override
     @Transactional(readOnly = true)
@@ -99,14 +101,14 @@ public class PackageTrackingServiceImpl implements PackageTrackingService {
         return packageRepository.findByTrackingNumber(trackingNumber).map(packageMapper::toDto);
     }
 
-    private TrackingEvent createTrackingEvent(Package pkg, PackageStatusDto dto) {
+   /* private TrackingEvent createTrackingEvent(Package pkg, PackageStatusDto dto) {
         TrackingEvent event = new TrackingEvent();
         event.setPkg(pkg);
         // удалить !!!!
         /* event.setStatus(dto.getStatus());
         event.setLocation(dto.getLocation());
         event.setDescription(dto.getDescription());*/
-        return event;
+        /*return event;
     }
 
     private void sendTrackingEventToKafka(String trackingNumber, TrackingEvent event) {
@@ -133,9 +135,9 @@ public class PackageTrackingServiceImpl implements PackageTrackingService {
             packageRepository.save(pkg);
             log.info("Updated package status to {} for package: {}", status, pkg.getTrackingNumber());
         }
-    }
+    }*/
 
-    private boolean shouldSendNotification(PackageStatus status) {
-        return status.isInitial() || status.isTerminal();
+    private boolean shouldSendNotification(PackageStatusDto status) {
+        return status.isInitialStatus() || status.isTerminalStatus();
     }
 }

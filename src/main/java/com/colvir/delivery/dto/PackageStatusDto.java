@@ -8,8 +8,8 @@ import lombok.Data;
 public class PackageStatusDto{
     private Long id;
     private String name;
-    private boolean isInitial;
-    private boolean isTerminal;
+    private Boolean isInitial;
+    private Boolean isTerminal;
 
     public boolean isInitialStatus() {
         // this == DELIVERED || this == RETURNED || this == FAILED_DELIVERY;

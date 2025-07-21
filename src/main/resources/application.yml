@@ -16,6 +16,8 @@ spring:
   #      auto-offset-reset: latest # by default, earliest
   main:
     banner-mode: 'off'
+#  autoconfigure:
+#    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
   datasource:
     url: jdbc:postgresql://localhost:5432/delivery
     username: delivery_user
@@ -34,9 +36,12 @@ management:
   endpoint:
     health:
       show-details: always
-    prometheus:
-      enabled: true
+#    prometheus:
+#      enabled: true
   metrics:
     distribution:
       percentiles-histogram:
         http.server.requests: true
+
+server:
+  port: 8081

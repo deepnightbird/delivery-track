@@ -14,11 +14,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public interface PackageRepository extends JpaRepository<Package, Long>, JpaSpecificationExecutor<Package> {
 
-    Optional<Package> findByTrackingNumber(String trackingNumber);
+    @Query(value = """
+        select p from packages p where p.tracking_number = :trackingNumber
+    """, nativeQuery = true)
+    Optional<Package> findByTrackingNumber(@Param("trackingNumber") String trackingNumber);
 
-    List<Package> findByStatus(PackageStatus status);
+    /*List<Package> findByStatus(PackageStatus status);
 
     @Query("""
         SELECT p FROM packages p WHERE p.sender.id = :senderId
@@ -43,16 +47,16 @@ public interface PackageRepository extends JpaRepository<Package, Long>, JpaSpec
         UPDATE packages p SET p.id_package_status = (SELECT s.id FROM package_stauts s WHERE s.name = :statusName) WHERE p.id = :id
     """, nativeQuery = true)
     @Modifying
-    void updateStatusName(@Param("id") Long id, @Param("statusName") String statusName);
+    void updateStatusName(@Param("id") Long id, @Param("statusName") String statusName);*/
 
-    @Query("""
+    /*@Query("""
         SELECT p FROM packages p WHERE p.courier.id = :courierId AND p.status IN :statuses
     """)
     List<Package> findByCourierIdAndStatusIn(
             @Param("courierId") Long courierId,
-            @Param("statuses") List<PackageStatus> statuses);
+            @Param("statuses") List<PackageStatus> statuses);*/
 
-    boolean existsByTrackingNumber(String trackingNumber);
+    /*boolean existsByTrackingNumber(String trackingNumber);
 
     @Query("""
         SELECT p FROM packages p WHERE p.status != com.delivery.model.PackageStatus.DELIVERED
@@ -60,6 +64,7 @@ public interface PackageRepository extends JpaRepository<Package, Long>, JpaSpec
     """)
     List<Package> findOverduePackages(@Param("currentDate") LocalDateTime currentDate);
 
-    void save(PackageDto packageDto);
+    void save(PackageDto packageDto);*/
+
 
 }

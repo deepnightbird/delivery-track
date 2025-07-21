@@ -17,7 +17,7 @@ import java.util.List;
 @Repository
 public interface TrackingEventRepository extends JpaRepository<TrackingEvent, Long> {
 
-    List<TrackingEvent> findByPkgOrderByEventTimeDesc(Package pkg);
+    /*List<TrackingEvent> findByPkgOrderByEventTimeDesc(Package pkg);
 
     Page<TrackingEvent> findByPkg(Package pkg, Pageable pageable);
 
@@ -42,5 +42,5 @@ public interface TrackingEventRepository extends JpaRepository<TrackingEvent, Lo
     TrackingEvent findLastEventForPackage(@Param("trackingNumber") String trackingNumber);
 
     @Modifying
-    void deleteByPkg(Package pkg);
+    void deleteByPkg(Package pkg);*/
 }

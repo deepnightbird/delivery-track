@@ -27,11 +27,11 @@ public class PackageStatus {
     @Column
     private String name;
 
-    @Column
-    private boolean isInitial;
+    @Column(name = "is_initial")
+    private Boolean isInitial;
 
-    @Column
-    private boolean isTerminal;
+    @Column(name = "is_terminal")
+    private Boolean isTerminal;
 
     public String toString() {
         return this.name;

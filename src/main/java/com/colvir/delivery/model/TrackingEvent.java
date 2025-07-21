@@ -47,10 +47,4 @@ public class TrackingEvent {
 
     private LocalDateTime lastUpdatedAt;
 
-    // удалить !!!
-    /* public boolean shouldSendNotification(){
-        return pkg.getStatus().isTerminal(); // || pkg.getStatus().isInitial();
-    }*/
-
-
 }

@@ -10,8 +10,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.CascadeType;
 import lombok.Data;
 import lombok.Getter;
@@ -38,34 +40,19 @@ public class Package {
     private String trackingNumber;
     private String description;
     private double weight;
-    @ManyToOne
-    @JoinColumn(name = "id_status")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinTable( name = "package_status", joinColumns =  @JoinColumn(name = "id_package_status"))
     private PackageStatus status;
 
-    @ManyToOne
-    @JoinColumn(name = "id_sender_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_customer_sender")
     private Customer sender;
     
-    @ManyToOne
-    @JoinColumn(name = "recipient_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_customer_recipient")
     private Customer recipient;
 
-    // удалить !!!!
-    /*@OneToMany(mappedBy = "pkg", cascade = CascadeType.ALL)
-    private List<TrackingEvent> trackingEvents = new ArrayList<>();*/
-    
     @CreationTimestamp
     private LocalDateTime createdAt;
-
-    public Package(Long id, String trackingNumber, String description, float weight, PackageStatusDto statusDto, CustomerDto senderDto, CustomerDto recepientDto) {
-        this.id = id;
-        this.trackingNumber = trackingNumber;
-        this.description = description;
-        this.weight = weight;
-        // здесь надо доделать !!!!!
-        /*this.status = statusDto;
-        this.sender = senderDto;
-        this.recipient = recepientDto;*/
-    }
 
 }

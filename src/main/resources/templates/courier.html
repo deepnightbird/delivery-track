@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Courier Dashboard</title>
+</head>
+<body>
+<h1>Welcome to Courier Dashboard!</h1>
+<p>This page is only accessible to users with COURIER role.</p>
+<a href="/">Back to Home</a>
+<form th:action="@{/logout}" method="post">
+    <input type="submit" value="Logout"/>
+</form>
+</body>
+</html>

@@ -14,11 +14,11 @@ import java.util.Optional;
 public interface PackageTrackingService {
     List<TrackingEventDto> getTrackingHistory(String trackingNumber)
             throws PackageNotFoundException;
-    void updateStatus(String trackingNumber, PackageStatusDto dto)
+    /*void updateStatus(String trackingNumber, PackageStatusDto dto)
             throws PackageNotFoundException;
     void processTrackingEventFromQueue(TrackingEventDto eventDto);
 
-    PackageDto createPackage(PackageDto dto);
+    PackageDto createPackage(PackageDto dto);*/
 
     Optional <PackageDto> findByTrackingNumber(String trackingNumber);
 }

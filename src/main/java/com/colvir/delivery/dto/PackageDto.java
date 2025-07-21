@@ -17,7 +17,7 @@ public class PackageDto {
     private Long id;
     private String trackingNumber;
     private String description;
-    private float weight;
+    private Float weight;
     private Long idPackageStatus;
     private Long idPackageSender;
     private Long idPackageRecepient;
