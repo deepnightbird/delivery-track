@@ -3,18 +3,7 @@ package com.colvir.delivery.model;
 
 import com.colvir.delivery.dto.CustomerDto;
 import com.colvir.delivery.dto.PackageStatusDto;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.CascadeType;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,12 +25,15 @@ public class Package {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "packages_id_seq")
     @SequenceGenerator(name = "packages_id_seq", sequenceName = "packages_id_seq", allocationSize = 1)
     private Long id;
-    
+
+    @Column(name = "tracking_number")
     private String trackingNumber;
+
     private String description;
     private double weight;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinTable( name = "package_status", joinColumns =  @JoinColumn(name = "id_package_status"))
+    @JoinColumn(name = "id_package_status")
     private PackageStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -52,7 +44,13 @@ public class Package {
     @JoinColumn(name = "id_customer_recipient")
     private Customer recipient;
 
-    @CreationTimestamp
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(name = "estimated_delivery_date")
+    private LocalDateTime estimatedDeliveryDate;
+
+    @Column(name = "delivered_at")
+    private LocalDateTime deliveredAt;
 
 }

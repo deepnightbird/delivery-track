@@ -1,9 +1,13 @@
 package com.colvir.delivery.service.impl;
 
+import com.colvir.delivery.dto.CourierDto;
 import com.colvir.delivery.dto.PackageDto;
 import com.colvir.delivery.dto.PackageStatusDto;
 import com.colvir.delivery.dto.TrackingEventDto;
+import com.colvir.delivery.exception.CourierNotFoundException;
 import com.colvir.delivery.exception.PackageNotFoundException;
+import com.colvir.delivery.exception.PackageStatusNotFoundException;
+import com.colvir.delivery.mapper.CourierMapper;
 import com.colvir.delivery.mapper.PackageStatusMapper;
 import com.colvir.delivery.mapper.TrackingEventMapper;
 import com.colvir.delivery.mapper.PackageMapper;
@@ -11,20 +15,23 @@ import com.colvir.delivery.message.TrackingEventMessage;
 import com.colvir.delivery.model.Package;
 import com.colvir.delivery.model.PackageStatus;
 import com.colvir.delivery.model.TrackingEvent;
+import com.colvir.delivery.repository.CustomerRepository;
 import com.colvir.delivery.repository.PackageRepository;
 import com.colvir.delivery.repository.TrackingEventRepository;
 import com.colvir.delivery.service.PackageTrackingService;
+import com.colvir.delivery.service.TrackingNumberGenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
+import java.util.Random;
+
+import static java.time.LocalDateTime.now;
 
 @Service
 @RequiredArgsConstructor
@@ -36,108 +43,125 @@ public class PackageTrackingServiceImpl implements PackageTrackingService {
     private final TrackingEventMapper trackingEventMapper;
     private final PackageStatusMapper packageStatusMapper;
     private final PackageMapper packageMapper;
+    private final CustomerRepository customerRepository;
+    private final CourierMapper courierMapper;
+    private final Random random = new Random();
     private final KafkaTemplate<String, TrackingEventMessage> kafkaTemplate;
-
 
     @Override
     @Transactional(readOnly = true)
     public List<TrackingEventDto> getTrackingHistory(String trackingNumber)
             throws PackageNotFoundException {
-        /*Package pkg = packageRepository.findByTrackingNumber(trackingNumber)
-                .orElseThrow(() -> new PackageNotFoundException(trackingNumber));
-
-        return trackingEventRepository.findByPkgOrderByEventTimeDesc(pkg).stream()
-                .map(trackingEventMapper::toDto)
-                .toList();*/
-        return null;
+        List <TrackingEvent> trackingEventList = trackingEventRepository.findByTrackingNumber(trackingNumber);
+        List<TrackingEventDto> trackingEventDtoList = new ArrayList<>();
+        for(TrackingEvent trackingEvent : trackingEventList){
+            TrackingEventDto dto = trackingEventMapper.toDto(trackingEvent);
+            trackingEventDtoList.add(dto);
+        }
+        return trackingEventDtoList;
     }
 
-    /*@Override
     @Transactional
-    public void updateStatus(String trackingNumber, PackageStatusDto dto)
-            throws PackageNotFoundException {
-        Package pkg = packageRepository.findByTrackingNumber(trackingNumber)
-                .orElseThrow(() -> new PackageNotFoundException(trackingNumber));
+    public PackageDto createPackage(PackageDto packageDto) {
+        PackageDto newPackageDto = new PackageDto();
+        customerRepository.findById(packageDto.getIdPackageSender()).ifPresent(
+                packageSender -> newPackageDto.setIdPackageSender(packageSender.getId())
+        );
+        customerRepository.findById(packageDto.getIdPackageRecipient()).ifPresent(
+                packageRecipient -> newPackageDto.setIdPackageRecipient(packageRecipient.getId())
+        );
+        newPackageDto.setTrackingNumber(TrackingNumberGenService.generateDomesticTracking());
+        newPackageDto.setIdPackageStatus(packageRepository.getIdInitialStatus());
+        newPackageDto.setDescription(packageDto.getDescription());
+        newPackageDto.setWeight(packageDto.getWeight());
+        newPackageDto.setCreatedAt(now());
 
-        TrackingEvent event = createTrackingEvent(pkg, dto);
-        trackingEventRepository.save(event);
+        newPackageDto.setEstimatedDeliveryDate(newPackageDto.getCreatedAt().plusDays(random.nextInt(30)));
+        packageRepository.save(packageMapper.toEntity(newPackageDto));
+        packageRepository.findByTrackingNumber(newPackageDto.getTrackingNumber())
+                    .ifPresent(pkg -> newPackageDto.setId(pkg.getId())
+                );
 
-        if (shouldSendNotification(pkg.getStatus())) {
-            sendTrackingEventToKafka(trackingNumber, event);
+        PackageStatusDto packageStatusDto = packageRepository.findStatusById(
+                        newPackageDto.getIdPackageStatus()).map(packageStatusMapper::toDto)
+                        .orElseThrow(() -> new PackageStatusNotFoundException(newPackageDto.getIdPackageStatus())
+                );
+        TrackingEventDto trackingEventDto = new TrackingEventDto();
+        trackingEventDto.setCreatedAt(now());
+        trackingEventDto.setLastUpdatedAt(now());
+        trackingEventDto.setPackageDto(newPackageDto);
+        trackingEventDto.setPackageStatusDto(packageStatusDto);
+        trackingEventDto.setPackageId(newPackageDto.getId());
+        trackingEventDto.setPackageStatusId(packageStatusDto.getId());
+        this.AddEvent(trackingEventDto);
+
+        return newPackageDto;
+    }
+
+    @Transactional
+    public TrackingEventDto LinkToCourier(TrackingEventDto trackingEventDto) {
+        PackageDto packageDto = packageRepository.findById(
+                    trackingEventDto.getPackageId()).map(packageMapper::toDto)
+                    .orElseThrow(() -> new PackageNotFoundException(trackingEventDto.getPackageId())
+                );
+        CourierDto courierDto = packageRepository.getCourierById(
+                    trackingEventDto.getCourierId()).map(courierMapper::toDto)
+                    .orElse(null);
+        PackageStatusDto packageStatusDto = packageRepository.findStatusById(
+                    trackingEventDto.getPackageStatusId()).map(packageStatusMapper::toDto)
+                    .orElseThrow(() -> new PackageStatusNotFoundException(trackingEventDto.getPackageId())
+                );
+        trackingEventDto.setCreatedAt(now());
+        trackingEventDto.setLastUpdatedAt(now());
+        trackingEventDto.setPackageDto(packageDto);
+        if (courierDto != null) {
+            trackingEventDto.setCourierDto(courierDto);
+        }
+        trackingEventDto.setPackageStatusDto(packageStatusDto);
+        trackingEventDto.setEventName("Linked");
+        return this.AddEvent(trackingEventDto);
+    }
+
+    @Transactional
+    public TrackingEventDto AddEvent(TrackingEventDto trackingEventDto) {
+        PackageStatus packageStatus = packageRepository.findStatusById(trackingEventDto.getPackageStatusId())
+                .orElseThrow(() -> new PackageStatusNotFoundException(trackingEventDto.getPackageStatusId())
+                );
+        TrackingEvent trackingEvent = trackingEventMapper.toEntity(trackingEventDto);
+        trackingEvent.setStatus(packageStatus);
+        trackingEvent.setCreatedAt(now());
+        trackingEvent.setLastUpdatedAt(now());
+        Package pkg = packageRepository.findById(trackingEventDto.getPackageId())
+                .orElseThrow(() -> new PackageNotFoundException(trackingEventDto.getPackageId())
+                );
+        pkg.setStatus(packageStatus);
+        trackingEvent.getPkg().setStatus(trackingEvent.getStatus());
+        Boolean isTerminal = trackingEvent.getStatus().getIsTerminal();
+        if (isTerminal) {
+            pkg.setDeliveredAt(now());
+        }
+        packageRepository.save(pkg);
+        trackingEventRepository.save(trackingEvent);
+        if ( trackingEventDto.getCourierId() != null ) {
+            trackingEventRepository.findByCourierAndPackageId(trackingEventDto.getCourierId(), trackingEventDto.getPackageId())
+                    .ifPresent(trkEvent -> trackingEventDto.setCourierId(trkEvent.getCourier().getId())
+                    );
+        } else {
+            trackingEventRepository.findLastByPackageId(trackingEventDto.getPackageId())
+                    .ifPresent(trkEvent -> trackingEventDto.setId(trkEvent.getId())
+                    );
         }
 
-        updatePackageStatusIfNeeded(pkg, dto);
+        return trackingEventDto;
     }
 
-    @Override
-    @Transactional
-    public void processTrackingEventFromQueue(TrackingEventDto eventDto) {
-        try {
-            Optional<Package> pkgOpt = packageRepository.findByTrackingNumber(eventDto.getTrackingNumber());
-            if (pkgOpt.isEmpty()) {
-                log.warn("Package not found for tracking number: {}", eventDto.getTrackingNumber());
-                return;
-            }
-
-            Package pkg = pkgOpt.get();
-            TrackingEvent event = trackingEventMapper.toEntity(eventDto);
-            event.setPkg(pkg);
-            trackingEventRepository.save(event);
-
-            log.info("Processed tracking event from queue for package: {}", eventDto.getTrackingNumber());
-        } catch (Exception e) {
-            log.error("Error processing tracking event from queue: {}", e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public PackageDto createPackage(PackageDto dto) {
-        return new PackageDto();
-    }*/
-
-    @Override
     @Transactional(readOnly = true)
     public Optional<PackageDto> findByTrackingNumber(String trackingNumber) {
         return packageRepository.findByTrackingNumber(trackingNumber).map(packageMapper::toDto);
     }
 
-   /* private TrackingEvent createTrackingEvent(Package pkg, PackageStatusDto dto) {
-        TrackingEvent event = new TrackingEvent();
-        event.setPkg(pkg);
-        // удалить !!!!
-        /* event.setStatus(dto.getStatus());
-        event.setLocation(dto.getLocation());
-        event.setDescription(dto.getDescription());*/
-        /*return event;
-    }
-
-    private void sendTrackingEventToKafka(String trackingNumber, TrackingEvent event) {
-        TrackingEventMessage message = TrackingEventMessage.builder()
-                .trackingNumber(trackingNumber)
-                //.status(event.getStatus())
-                .location(event.getLocation())
-                .eventTime(LocalDateTime.now())
-                .build();
-
-        CompletableFuture<SendResult<String, TrackingEventMessage>> future = kafkaTemplate.send("tracking-events", message);
-        future.whenComplete((result, exception) -> {
-            if (exception != null) {
-                log.error("Error while sending event! Check Kafka broker", exception);
-            } else {
-                log.info("Event sent {} successfully with offset {}", event, result.getRecordMetadata().offset());
-            }
-        });
-    }
-
-    private void updatePackageStatusIfNeeded(Package pkg, PackageStatusDto status) {
-        if (status.isTerminalStatus()) {
-            pkg.setStatus(packageStatusMapper.toEntity(status));
-            packageRepository.save(pkg);
-            log.info("Updated package status to {} for package: {}", status, pkg.getTrackingNumber());
-        }
-    }*/
-
-    private boolean shouldSendNotification(PackageStatusDto status) {
-        return status.isInitialStatus() || status.isTerminalStatus();
+    @Transactional(readOnly = true)
+    public Optional <PackageDto> getPackageById(Long Id) {
+        return packageRepository.findById(Id).map(packageMapper::toDto);
     }
 }

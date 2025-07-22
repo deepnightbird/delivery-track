@@ -1,5 +1,6 @@
 package com.colvir.delivery.mapper;
 
+import com.colvir.delivery.dto.CustomerDto;
 import com.colvir.delivery.dto.PackageDto;
 import com.colvir.delivery.dto.PackageStatusDto;
 import com.colvir.delivery.model.Customer;
@@ -8,42 +9,53 @@ import com.colvir.delivery.model.PackageStatus;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.factory.Mappers;
 
 import java.util.Optional;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface PackageMapper {
+
+    PackageStatusMapper packageStatusMapper = Mappers.getMapper(PackageStatusMapper.class);
+    CustomerMapper customerMapper = Mappers.getMapper(CustomerMapper.class);
 
     Package toEntity(PackageDto packageDto);
 
     PackageDto toDto(Package pkg);
 
-    default Optional<PackageDto> toOptional(Optional<Package> pkg) {
-        return pkg.map(this::toDto);
-    }
-
     @AfterMapping
     default void mapPackageStatus(@MappingTarget PackageDto packageDto, Package pkg) {
-        if (pkg.getStatus() == null) {
-            return;
+        if (pkg.getStatus() != null) {
+            PackageStatusDto packageStatusDto = packageStatusMapper.toDto(pkg.getStatus());
+            packageDto.setIdPackageStatus(pkg.getStatus().getId());
+            packageDto.setPackageStatusDto(packageStatusDto);
         }
-        packageDto.setIdPackageStatus(pkg.getStatus().getId());
+        if (pkg.getSender() != null) {
+            CustomerDto customerDto = customerMapper.toDto(pkg.getSender());
+            packageDto.setSenderDto(customerDto);
+            packageDto.setIdPackageSender(customerDto.getId());
+        }
+        if (pkg.getRecipient() != null) {
+            CustomerDto customerDto = customerMapper.toDto(pkg.getRecipient());
+            packageDto.setRecipientDto(customerDto);
+            packageDto.setIdPackageRecipient(customerDto.getId());
+        }
     }
 
     @AfterMapping
-    default void mapPackageSender(@MappingTarget PackageDto packageDto, Customer customer) {
-        if (customer.getId() == null) {
+    default void mapPackageSender(@MappingTarget PackageDto packageDto, Package pkg) {
+        if (pkg.getSender() == null) {
             return;
         }
-        packageDto.setIdPackageSender(customer.getId());
+        packageDto.setIdPackageSender(pkg.getSender().getId());
     }
 
     @AfterMapping
-    default void mapPackageRecepient(@MappingTarget PackageDto packageDto, Customer customer) {
-        if (customer.getId() == null) {
+    default void mapPackageRecipient(@MappingTarget PackageDto packageDto, Package pkg) {
+        if (pkg.getRecipient() == null) {
             return;
         }
-        packageDto.setIdPackageRecepient(customer.getId());
+        packageDto.setIdPackageRecipient(pkg.getRecipient().getId());
     }
 
     @AfterMapping
@@ -67,12 +79,12 @@ public interface PackageMapper {
     }
 
     @AfterMapping
-    default void mapPackageRecepient(@MappingTarget Package pkg, PackageDto packageDto) {
+    default void mapPackageRecipient(@MappingTarget Package pkg, PackageDto packageDto) {
         if (packageDto.getIdPackageSender() == null) {
             return;
         }
-        Customer recepient = new Customer();
-        recepient.setId(packageDto.getIdPackageRecepient());
-        pkg.setSender(recepient);
+        Customer recipient = new Customer();
+        recipient.setId(packageDto.getIdPackageRecipient());
+        pkg.setRecipient(recipient);
     }
 }

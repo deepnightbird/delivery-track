@@ -34,29 +34,9 @@ public class Customer {
 
     private String name;
 
+    @Column(name = "phone_number")
     private String phoneNumber;
 
     private String address;
 
-    // потом удалить !!!
-    /*@OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Package> sentPackages = new ArrayList<>();
-
-    @OneToMany(mappedBy = "recipient", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Package> receivedPackages = new ArrayList<>();
-
-    public void addSentPackage(Package pkg) {
-        sentPackages.add(pkg);
-        pkg.setSender(this);
-    }
-
-    public void addReceivedPackage(Package pkg) {
-        receivedPackages.add(pkg);
-        pkg.setRecipient(this);
-    }
-
-    public boolean hasRequiredInfo() {
-        return name != null && !name.isBlank()
-                && phoneNumber != null && !phoneNumber.isBlank();
-    }*/
 }

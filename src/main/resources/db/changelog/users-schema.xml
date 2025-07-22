@@ -1,0 +1,67 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="Create-table-user_roles"
+               author="andrew">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="user_roles"/>
+            </not>
+        </preConditions>
+        <createTable tableName="user_roles">
+            <column name="id_user"
+                    type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role"
+                    type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="Create-table-users"
+               author="andrew">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="users"/>
+            </not>
+        </preConditions>
+
+        <createSequence sequenceName="users_id_seq" startValue="1" incrementBy="1" cycle="true"/>
+
+        <createTable tableName="users">
+
+            <column name="id"
+                    type="BIGINT" defaultValueSequenceNext="users_id_seq">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="username"
+                    type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password"
+                    type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="enabled"
+                    type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+        <sql><![CDATA[
+            alter sequence users_id_seq owned by users.id;
+            ]]></sql>
+        <addUniqueConstraint columnNames="username"
+                             constraintName="uc_users_username"
+                             tableName="users"/>
+        <addForeignKeyConstraint baseColumnNames="id_user"
+                                 baseTableName="user_roles"
+                                 constraintName="fk_user_roles_on_user"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+
+</databaseChangeLog>

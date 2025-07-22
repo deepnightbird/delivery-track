@@ -125,7 +125,7 @@
                 <constraints nullable="false" foreignKeyName="fk_package_customer_recipient"
                              references="customers(id)"/>
             </column>
-            <column name="created_ad" type="datetime" defaultValue="NOW()"/>
+            <column name="created_at" type="datetime" defaultValue="NOW()"/>
             <column name="estimated_delivery_date" type="datetime"/>
             <column name="delivered_at" type="datetime"/>
         </createTable>
@@ -136,8 +136,8 @@
 
         <addUniqueConstraint tableName="packages" columnNames="tracking_number"/>
 
-        <createIndex indexName="idx_packages_created_ad" tableName="packages">
-            <column name="created_ad"/>
+        <createIndex indexName="idx_packages_created_at" tableName="packages">
+            <column name="created_at"/>
         </createIndex>
 
     </changeSet>
@@ -155,21 +155,21 @@
             <column name="id" type="bigint" defaultValueSequenceNext="tracking_events_id_seq">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="event_name" type="varchar(255)">
-                <constraints nullable="false"/>
-            </column>
+            <column name="event_name" type="varchar(255)"/>
             <column name="id_package" type="bigint">
                 <constraints nullable="false" foreignKeyName="fk_tracking_events_packages"
                              references="packages(id)"/>
             </column>
+            <column name="id_package_status" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_package_status"
+                             references="package_status(id)"/>
+            </column>
             <column name="id_courier" type="bigint">
-                <constraints nullable="false" foreignKeyName="fk_tracking_events_couriers"
-                             references="packages(id)"/>
+                <constraints foreignKeyName="fk_tracking_events_couriers"
+                             references="couriers(id)"/>
             </column>
-            <column name="location" type="varchar(2000)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="created_ad" type="datetime" defaultValue="NOW()"/>
+            <column name="location" type="varchar(2000)"/>
+            <column name="created_at" type="datetime" defaultValue="NOW()"/>
             <column name="last_updated_at" type="datetime"/>
         </createTable>
 
@@ -177,8 +177,8 @@
             alter sequence tracking_events_id_seq owned by tracking_events.id;
             ]]></sql>
 
-        <createIndex indexName="idx_tracking_events_created_ad" tableName="tracking_events">
-            <column name="created_ad"/>
+        <createIndex indexName="idx_tracking_events_created_at" tableName="tracking_events">
+            <column name="created_at"/>
         </createIndex>
 
     </changeSet>

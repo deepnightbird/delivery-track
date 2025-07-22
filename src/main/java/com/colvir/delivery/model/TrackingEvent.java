@@ -1,14 +1,6 @@
 package com.colvir.delivery.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.SequenceGenerator;
-
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
+import jakarta.persistence.*;
 
 import lombok.Data;
 import lombok.Getter;
@@ -31,20 +23,26 @@ public class TrackingEvent {
     @SequenceGenerator(name = "tracking_events_id_seq", sequenceName = "tracking_events_id_seq", allocationSize = 1)
     private Long id;
     
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_package")
     private Package pkg;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_courier")
     private Courier courier;
-    
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_package_status")
+    private PackageStatus status;
+
     private String location;
+
+    @Column(name = "event_name")
     private String eventName;
-    
-    @CreationTimestamp
+
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "last_updated_at")
     private LocalDateTime lastUpdatedAt;
-
 }

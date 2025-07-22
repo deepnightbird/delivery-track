@@ -1,12 +1,14 @@
 package com.colvir.delivery.controller;
 
 import com.colvir.delivery.dto.PackageDto;
+import com.colvir.delivery.model.TrackingEvent;
 import com.colvir.delivery.service.PackageTrackingService;
 import com.colvir.delivery.dto.PackageStatusDto;
 import com.colvir.delivery.dto.TrackingEventDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,37 +17,40 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/packages")
+@RequestMapping("/track")
 @RequiredArgsConstructor
 @Validated
 public class PackageController {
     private final PackageTrackingService packageTrackingService;
     
-    @GetMapping("/track/{trackingNumber}")
-    public ResponseEntity<PackageDto> getStatusByTrackingNumber(@PathVariable @NotNull String trackingNumber) {
+    @GetMapping("/{trackingNumber}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<PackageDto> getStatusByTrackingNumber(@PathVariable String trackingNumber) {
         return packageTrackingService.findByTrackingNumber(trackingNumber).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
     
-    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<PackageDto> createPackage(@Valid @RequestBody PackageDto dto) {
-        //return new ResponseEntity<>(packageTrackingService.createPackage(dto), HttpStatus.CREATED);
-        return null;
+    @PostMapping("/create")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<PackageDto> createPackage(@Valid @RequestBody PackageDto packageDto) {
+        return new ResponseEntity<>(packageTrackingService.createPackage(packageDto), HttpStatus.CREATED);
     }
     
-    @GetMapping("/track/{trackingNumber}/history")
+    @GetMapping("/{trackingNumber}/history")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<List<TrackingEventDto>> getTrackingHistory(@PathVariable String trackingNumber) {
-        //return ResponseEntity.ok(packageTrackingService.getTrackingHistory(trackingNumber));
-        return null;
+        return ResponseEntity.ok(packageTrackingService.getTrackingHistory(trackingNumber));
     }
     
-    @PatchMapping("/track/{trackingNumber}")
-    //@PreAuthorize("hasRole('COURIER') or hasRole('ADMIN')")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Void> updateStatus(
-            @PathVariable String trackingNumber,
-            @RequestBody PackageStatusDto dto) {
-        // packageTrackingService.updateStatus(trackingNumber, dto);
-        return ResponseEntity.noContent().build();
+    @PostMapping("/link")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<TrackingEventDto> linkToCourier(@Valid @RequestBody TrackingEventDto trackingEventDto) {
+        return new ResponseEntity<>(packageTrackingService.LinkToCourier(trackingEventDto), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/update")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<TrackingEventDto> updateStatus(@Valid @RequestBody TrackingEventDto trackingEventDto) {
+        return new ResponseEntity<>(packageTrackingService.AddEvent(trackingEventDto), HttpStatus.OK);
     }
 }

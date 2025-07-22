@@ -16,7 +16,15 @@ spring:
   #      auto-offset-reset: latest # by default, earliest
   main:
     banner-mode: 'off'
-#  autoconfigure:
+  jpa:
+    show-sql: true
+    hibernate:
+      naming:
+        physical-strategy:
+          org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      format_sql: true
+  #  autoconfigure:
 #    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
   datasource:
     url: jdbc:postgresql://localhost:5432/delivery
@@ -27,6 +35,11 @@ spring:
     change-log: 'classpath:db/changelog/changeLog.xml'
 #    default-schema: 'deliverydb'
 #    liquibase-schema: 'deliverydb'
+
+# JWT
+jwt:
+  secret: "2D4A614E645267556B58703273357638792F423F4428472B4B6250655368566D"
+  expiration: 86400000
 
 management:
   endpoints:
@@ -43,5 +56,9 @@ management:
       percentiles-histogram:
         http.server.requests: true
 
-server:
-  port: 8081
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+        web: DEBUG

@@ -10,12 +10,12 @@ public class CustomerDto {
     private Long id;
     private String name;
     private String address;
-    private String phone;
+    private String phoneNumber;
 
-    public CustomerDto(Long id, String name, String address, String phone){
+    public CustomerDto(Long id, String name, String address, String phoneNumber){
         this.id = id;
         this.name = name;
         this.address = address;
-        this.phone = phone;
+        this.phoneNumber = phoneNumber;
     }
 }

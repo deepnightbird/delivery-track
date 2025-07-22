@@ -19,8 +19,11 @@ public class PackageDto {
     private String description;
     private Float weight;
     private Long idPackageStatus;
+    private PackageStatusDto packageStatusDto;
     private Long idPackageSender;
-    private Long idPackageRecepient;
+    private CustomerDto senderDto;
+    private Long idPackageRecipient;
+    private CustomerDto recipientDto;
     private LocalDateTime createdAt;
     private LocalDateTime estimatedDeliveryDate;
     private LocalDateTime deliveredAt;
@@ -32,6 +35,6 @@ public class PackageDto {
         this.weight = weight;
         this.idPackageStatus = statusDto.getId();
         this.idPackageSender = senderDto.getId();
-        this.idPackageRecepient = recepientDto.getId();
+        this.idPackageRecipient = recepientDto.getId();
     }
 }

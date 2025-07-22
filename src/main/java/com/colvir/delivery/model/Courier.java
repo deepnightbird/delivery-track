@@ -43,10 +43,4 @@ public class Courier {
 
     private String name;
 
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime deliveredAt;
-
 }
